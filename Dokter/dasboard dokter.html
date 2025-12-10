@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Dokter - My Klinik</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body { background: #f5f7ff; }
+        .sidebar {
+            width: 250px;
+            min-height: 100vh;
+            background: #1e5dfb;
+            color: #fff;
+            padding: 20px;
+        }
+        .sidebar a {
+            color: #fff;
+            text-decoration: none;
+            display: block;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+        }
+        .sidebar a:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        .active-menu {
+            background: rgba(255,255,255,0.35);
+        }
+        .main-content {
+            margin-left: 260px;
+            padding: 25px;
+        }
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .waiting { background: #ffe8a3; color: #8a6d00; }
+        .approved { background: #c5f7c7; color: #0d7a26; }
+        .done { background: #d5e2ff; color: #0b2d57; }
+    </style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar position-fixed">
+    <h3 class="mb-4">My Klinik</h3>
+
+    <div class="mb-4">
+        <p class="mb-1 fw-bold">dr. Jonathan</p>
+        <small>Dokter Umum</small>
+    </div>
+
+    <a href="#" class="active-menu">Dashboard</a>
+    <a href="#">Jadwal Saya</a>
+    <a href="#">Riwayat Pemeriksaan</a>
+    <a href="#" class="mt-5 text-danger fw-bold">Logout</a>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main-content">
+
+    <h2 class="mb-4">Reservasi Masuk</h2>
+
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead class="table-primary">
+                <tr>
+                    <th>#</th>
+                    <th>Nama Pasien</th>
+                    <th>Tanggal</th>
+                    <th>Jam</th>
+                    <th>Keluhan</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>1</td>
+                    <td>Asep Tatang</td>
+                    <td>2025-01-12</td>
+                    <td>09:30</td>
+                    <td>Pusing dan demam</td>
+                    <td><span class="status-badge waiting">Menunggu</span></td>
+                    <td>
+                        <button class="btn btn-success btn-sm">Setujui</button>
+                        <button class="btn btn-danger btn-sm">Tolak</button>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>2</td>
+                    <td>Siti Rahma</td>
+                    <td>2025-01-15</td>
+                    <td>13:00</td>
+                    <td>Nyeri gigi</td>
+                    <td><span class="status-badge approved">Disetujui</span></td>
+                    <td>
+                        <button class="btn btn-secondary btn-sm">Detail</button>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>3</td>
+                    <td>Budi Santoso</td>
+                    <td>2024-12-20</td>
+                    <td>10:00</td>
+                    <td>Sakit tenggorokan</td>
+                    <td><span class="status-badge done">Selesai</span></td>
+                    <td>
+                        <button class="btn btn-secondary btn-sm">Detail</button>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,80 @@
+<?php
+
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Pasien - My Klinik</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background: #f5f7ff; }
+        .card-action {
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: 0.2s;
+            padding: 25px;
+            text-align: center;
+            background: #fff;
+        }
+        .card-action:hover { transform: translateY(-5px); }
+        .card-action img { width: 60px; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+        <a class="navbar-brand" href="#">My Klinik</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="patient-logout.php">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container py-4">
+    <div class="mb-4">
+        <h2>Halo,</h2>
+    </div>
+
+    <div class="row g-4">
+
+        <div class="col-md-6 col-lg-4">
+            <a href="reservasi.php" class="text-decoration-none text-dark">
+                <div class="card-action">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3209/3209265.png" alt="reservasi">
+                    <h5>Reservasi Kunjungan</h5>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <a href="riwayat.php" class="text-decoration-none text-dark">
+                <div class="card-action">
+                    <img src="https://cdn-icons-png.flaticon.com/512/2965/2965567.png" alt="history">
+                    <h5>Riwayat Reservasi</h5>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <a href="profil.php" class="text-decoration-none text-dark">
+                <div class="card-action">
+                    <img src="https://cdn-icons-png.flaticon.com/512/1436/1436661.png" alt="profile">
+                    <h5>Profil Saya</h5>
+                </div>
+            </a>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

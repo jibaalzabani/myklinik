@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Riwayat Reservasi - My Klinik</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body { background: #f5f7ff; }
+        .container-box {
+            max-width: 900px;
+            margin: 40px auto;
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .status {
+            font-weight: bold;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 14px;
+        }
+
+        .waiting { background: #ffe8a3; color: #8a6d00; }
+        .approved { background: #c5f7c7; color: #0d7a26; }
+        .rejected { background: #ffcaca; color: #7a0d0d; }
+        .done { background: #d5e2ff; color: #0b2d57; }
+    </style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+        <a class="navbar-brand" href="#">My Klinik</a>
+        <a href="#" class="btn btn-light btn-sm">Logout</a>
+    </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<div class="container-box">
+    <h3 class="mb-4">Riwayat Reservasi</h3>
+
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead class="table-primary">
+                <tr>
+                    <th>#</th>
+                    <th>Dokter</th>
+                    <th>Tanggal</th>
+                    <th>Jam</th>
+                    <th>Keluhan</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>dr. Andi (Umum)</td>
+                    <td>2025-01-12</td>
+                    <td>09:30</td>
+                    <td>Pusing dan demam</td>
+                    <td><span class="status waiting">Menunggu</span></td>
+                </tr>
+
+                <tr>
+                    <td>2</td>
+                    <td>dr. Sarah (Gigi)</td>
+                    <td>2025-01-15</td>
+                    <td>13:00</td>
+                    <td>Nyeri gigi</td>
+                    <td><span class="status approved">Disetujui</span></td>
+                </tr>
+
+                <tr>
+                    <td>3</td>
+                    <td>dr. Budi (Anak)</td>
+                    <td>2024-12-29</td>
+                    <td>10:00</td>
+                    <td>Batuk berkepanjangan</td>
+                    <td><span class="status rejected">Ditolak</span></td>
+                </tr>
+
+                <tr>
+                    <td>4</td>
+                    <td>dr. Maria (Kandungan)</td>
+                    <td>2024-11-10</td>
+                    <td>08:15</td>
+                    <td>Pemeriksaan rutin</td>
+                    <td><span class="status done">Selesai</span></td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+</body>
+</html>
