@@ -61,48 +61,35 @@
     </div>
 
     <!-- Form -->
-    <form action="patient-register-process.php" method="POST">
-
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label>Nama Lengkap</label>
-                <input type="text" name="nama" class="form-control" required>
-            </div>
-
-            <div class="col-md-6 mb-3">
-                <label>No. HP</label>
-                <input type="text" name="hp" class="form-control" required>
-            </div>
+    <form action="register_process.php" method="POST">
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label>Nama Lengkap</label>
+            <input type="text" name="nama" class="form-control" required>
         </div>
-
-        <div class="mb-3">
-            <label>Email</label>
-            <input type="email" name="email" class="form-control" required>
+        <div class="col-md-6 mb-3">
+            <label>No. HP</label>
+            <input type="text" name="hp" class="form-control" required>
         </div>
-
-        <div class="mb-3">
-            <label>Alamat Lengkap</label>
-            <textarea name="alamat" class="form-control" rows="3" required></textarea>
-        </div>
-
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <label>Password</label>
-                <input type="password" name="password" class="form-control" required>
-            </div>
-
-            <div class="col-md-6 mb-3">
-                <label>Konfirmasi Password</label>
-                <input type="password" name="password2" class="form-control" required>
-            </div>
-        </div>
-
-        <button class="btn btn-register w-100 mt-3">Daftar</button>
-    </form>
+    </div>
+    <div class="mb-3">
+        <label>Email</label>
+        <input type="email" name="email" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label>Alamat Lengkap</label>
+        <textarea name="alamat" class="form-control" rows="3" required></textarea>
+    </div>
+    <div class="mb-3">
+        <label>Password</label>
+        <input type="password" name="password" class="form-control" required>
+    </div>
+    <button type="submit" class="btn btn-register w-100 mt-3">Daftar Sekarang</button>
+</form>
 
     <div class="text-center mt-4 text-secondary">
         Sudah punya akun?  
-        <a href="patient-login.php" class="fw-bold text-primary">Login di sini</a>
+        <a href="login-pasien.html" class="fw-bold text-primary">Login di sini</a>
     </div>
 
 </div>
