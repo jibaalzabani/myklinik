@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jadwal Saya - Dokter</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#">Sistem Reservasi Klinik</a>
+            <div class="d-flex">
+                <a href="dashboard-dokter.php" class="btn btn-outline-light btn-sm">Dashboard</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+
+        <!-- Title -->
+        <div class="text-center mb-4">
+            <h2 class="fw-bold">Jadwal Saya</h2>
+            <p class="text-muted">Kelola jadwal praktik dan reservasi yang akan datang</p>
+        </div>
+
+        <div class="row g-4">
+
+            <!-- Jadwal Praktik Mingguan -->
+            <div class="col-lg-5">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white fw-bold">
+                        Jadwal Praktik Mingguan
+                    </div>
+                    <div class="card-body">
+
+                        <table class="table table-bordered align-middle">
+                            <tr>
+                                <th>Senin</th>
+                                <td>08:00 - 12:00</td>
+                            </tr>
+                            <tr>
+                                <th>Selasa</th>
+                                <td>13:00 - 17:00</td>
+                            </tr>
+                            <tr>
+                                <th>Rabu</th>
+                                <td>Libur</td>
+                            </tr>
+                            <tr>
+                                <th>Kamis</th>
+                                <td>08:00 - 12:00</td>
+                            </tr>
+                            <tr>
+                                <th>Jumat</th>
+                                <td>13:00 - 17:00</td>
+                            </tr>
+                            <tr>
+                                <th>Sabtu</th>
+                                <td>09:00 - 12:00</td>
+                            </tr>
+                            <tr>
+                                <th>Minggu</th>
+                                <td>Libur</td>
+                            </tr>
+                        </table>
+
+                        <div class="text-center mt-3">
+                            <a href="ubah-jadwal.php">
+                                <button class="btn btn-outline-primary btn-sm">Ubah Jadwal</button>
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reservasi Mendatang -->
+            <div class="col-lg-7">
+                <div class="card shadow">
+                    <div class="card-header bg-success text-white fw-bold">
+                        Reservasi Mendatang
+                    </div>
+                    <div class="card-body">
+
+                        <div class="list-group">
+
+                            <!-- Item 1 -->
+                            <div class="list-group-item d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="fw-bold">Budi Santoso</h6>
+                                    <p class="mb-1 text-muted">10 Januari 2025 — 09:00 WIB</p>
+                                </div>
+                                <a href="#" class="btn btn-outline-primary btn-sm">Detail</a>
+                            </div>
+
+                            <!-- Item 2 -->
+                            <div class="list-group-item d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="fw-bold">Siti Rahma</h6>
+                                    <p class="mb-1 text-muted">12 Januari 2025 — 13:00 WIB</p>
+                                </div>
+                                <a href="#" class="btn btn-outline-primary btn-sm">Detail</a>
+                            </div>
+
+                            <!-- Item 3 -->
+                            <div class="list-group-item d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="fw-bold">Agus Hermawan</h6>
+                                    <p class="mb-1 text-muted">15 Januari 2025 — 10:30 WIB</p>
+                                </div>
+                                <a href="#" class="btn btn-outline-primary btn-sm">Detail</a>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+</html>
