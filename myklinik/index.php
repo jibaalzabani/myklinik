@@ -51,7 +51,7 @@
                         <p class="text-muted">Daftar berobat, lihat riwayat, dan cek jadwal dokter.</p>
                         <a href="pasien/login-pasien.php" class="btn btn-primary w-100 fw-bold rounded-pill mt-3">Login Pasien</a>
                         <div class="mt-2 small">
-                            Belum punya akun? <a href="pasien/register-pasien.php">Daftar</a>
+                            Belum punya akun? <a href="pasien/register.php">Daftar</a>
                         </div>
                     </div>
                 </div>

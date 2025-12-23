@@ -1,63 +1,50 @@
 const express = require('express');
 const mysql = require('mysql2');
-const bodyParser = require('body-parser');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const app = express();
-app.use(cors()); // Agar website boleh akses backend
-app.use(express.json()); // Agar bisa baca data kiriman
+app.use(cors()); 
+app.use(express.json()); 
 
-// --- KONEKSI DATABASE ---
+// =========================================================
+//  KONFIGURASI DATABASE
+// =========================================================
 const db = mysql.createConnection({
     host: 'localhost',
-    user: 'root',      // User default Laragon/XAMPP
-    password: '',      // Password default (kosong)
-    database: 'klinik_db' // Nama database yang kita buat tadi
+    user: 'root',      
+    password: '',      
+    database: 'klinik_db' 
 });
 
-// Cek koneksi
 db.connect((err) => {
     if (err) {
-        console.error('Gagal konek database:', err);
+        console.error('❌ Gagal konek database:', err);
     } else {
-        console.log('Berhasil terhubung ke Database MySQL...');
+        console.log('✅ Berhasil terhubung ke Database MySQL...');
     }
 });
 
-const JWT_SECRET = 'rahasia_klinik_123'; // Kunci rahasia token
+// =========================================================
+//  AUTH (LOGIN & REGISTER)
+// =========================================================
 
-
-
-// --- 1. ROUTE LOGIN (PENTING) ---
-// --- LOGIN USER (Dokter/Pasien/Staff) ---
+// --- 1. LOGIN (Pasien, Dokter, Admin) ---
 app.post('/login', (req, res) => {
     const { email, password } = req.body;
-    
-    // Ambil data user berdasarkan email
     const sql = "SELECT * FROM users WHERE email = ?";
     
     db.query(sql, [email], (err, result) => {
         if (err) return res.status(500).json({ msg: "Error Database" });
+        if (result.length === 0) return res.status(404).json({ msg: "Email tidak ditemukan!" });
         
-        // Cek apakah user ada?
-        if (result.length === 0) {
-            return res.status(404).json({ msg: "Email tidak ditemukan!" });
-        }
-        
-        // Cek Password
         const user = result[0];
         const cekPass = bcrypt.compareSync(password, user.password);
+        if (!cekPass) return res.status(401).json({ msg: "Password Salah!" });
         
-        if (!cekPass) {
-            return res.status(401).json({ msg: "Password Salah!" });
-        }
-        
-        // Buat Token
         const token = jwt.sign({ id: user.id, role: user.role }, 'rahasia_negara', { expiresIn: '1d' });
         
-        // --- BAGIAN PENTING: KIRIM DATA LENGKAP KE FRONTEND ---
         res.json({
             token: token,
             msg: "Login Berhasil",
@@ -65,156 +52,226 @@ app.post('/login', (req, res) => {
                 id: user.id,
                 name: user.name,
                 email: user.email,
-                role: user.role, // <--- PASTIKAN INI ADA!
+                role: user.role, 
                 phone: user.phone
             }
         });
     });
 });
 
-// --- 4. ROUTE REGISTER PASIEN BARU ---
+// --- 2. REGISTER PASIEN ---
 app.post('/register', (req, res) => {
     const { nama, email, password, no_hp } = req.body;
-
-    // 1. Cek apakah email sudah dipakai?
+    
+    // Cek email dulu
     const cekSql = "SELECT * FROM users WHERE email = ?";
     db.query(cekSql, [email], (err, result) => {
         if(err) return res.status(500).json({msg: "Error Server"});
-        
-        if(result.length > 0) {
-            return res.status(400).json({msg: "Email sudah terdaftar!"});
-        }
+        if(result.length > 0) return res.status(400).json({msg: "Email sudah terdaftar!"});
 
-        // 2. Kalau belum, enkripsi password & simpan
         const hash = bcrypt.hashSync(password, 10);
         const sql = "INSERT INTO users (name, email, password, phone, role) VALUES (?, ?, ?, ?, 'pasien')";
         
         db.query(sql, [nama, email, hash, no_hp], (err, result) => {
             if (err) return res.status(500).json({ msg: "Gagal Mendaftar" });
-            
             res.status(201).json({ msg: "Registrasi Berhasil! Silakan Login." });
         });
     });
 });
 
-// --- 4. AMBIL DATA DOKTER ---
+// =========================================================
+//  PASIEN: RESERVASI & RIWAYAT
+// =========================================================
+
+// --- 3. AMBIL DAFTAR DOKTER ---
 app.get('/doctors', (req, res) => {
-    // PERHATIKAN: Saya menambahkan koma dan kata "email" di dalam SELECT
-    const sql = "SELECT id, name, specialist, email FROM users WHERE role = 'dokter'";
-    
+    const sql = "SELECT id, name, specialist, email, phone FROM users WHERE role = 'dokter'";
     db.query(sql, (err, result) => {
         if (err) return res.status(500).json(err);
         res.json(result);
     });
 });
 
-// --- 6. SIMPAN RESERVASI BARU ---
+// --- 4. AMBIL JADWAL SPESIFIK DOKTER (Untuk Validasi di Frontend) ---
+app.get('/schedules/:doctorId', (req, res) => {
+    const doctorId = req.params.doctorId;
+    // Mengurutkan hari agar rapi (Senin s/d Minggu)
+    const sql = `
+        SELECT * FROM schedules 
+        WHERE doctor_id = ? 
+        ORDER BY FIELD(day, 'Senin','Selasa','Rabu','Kamis','Jumat','Sabtu','Minggu'), start_time
+    `;
+    db.query(sql, [doctorId], (err, result) => {
+        if (err) return res.status(500).json(err);
+        res.json(result);
+    });
+});
+
+// --- 5. SIMPAN RESERVASI BARU ---
 app.post('/reservasi', (req, res) => {
     const { user_id, doctor_id, date, time, complaint } = req.body;
-
     const sql = "INSERT INTO appointments (user_id, doctor_id, date, time, complaint) VALUES (?, ?, ?, ?, ?)";
     
     db.query(sql, [user_id, doctor_id, date, time, complaint], (err, result) => {
-        if (err) {
-            console.error(err); // Cek error di terminal jika gagal
-            return res.status(500).json({ msg: "Gagal menyimpan reservasi" });
-        }
+        if (err) return res.status(500).json({ msg: "Gagal menyimpan reservasi" });
         res.status(201).json({ msg: "Reservasi Berhasil Dibuat!" });
     });
 });
 
-// --- 7. AMBIL RIWAYAT RESERVASI (Spesifik per Pasien) ---
+// --- 6. AMBIL RIWAYAT PASIEN (DASHBOARD PASIEN) ---
+// Update: Mengambil kolom 'diagnosis' juga
 app.get('/appointments/:userId', (req, res) => {
     const userId = req.params.userId;
-    
-    // Kita pakai JOIN supaya yang muncul bukan ID Dokter (misal: 5), 
-    // tapi Nama Dokternya (misal: Dr. Strange)
     const sql = `
-        SELECT a.id, a.date, a.time, a.complaint, a.status, u.name AS doctor_name 
+        SELECT a.id, a.date, a.time, a.complaint, a.diagnosis, a.status, u.name AS doctor_name 
         FROM appointments a 
         JOIN users u ON a.doctor_id = u.id 
         WHERE a.user_id = ? 
         ORDER BY a.date DESC
     `;
-    
     db.query(sql, [userId], (err, result) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ msg: "Error mengambil riwayat" });
-        }
+        if (err) return res.status(500).json({ msg: "Error mengambil riwayat" });
         res.json(result);
     });
 });
 
-// --- 8. DASHBOARD DOKTER (Lihat Pasien yang Booking ke Dia) ---
-app.get('/doctor/appointments/:doctorId', (req, res) => {
-    const doctorId = req.params.doctorId;
-    
-    // Kita JOIN tabel appointments dengan users (tapi kali ini ambil nama PASIEN)
-    const sql = `
-        SELECT a.id, a.date, a.time, a.complaint, a.status, u.name AS patient_name 
-        FROM appointments a 
-        JOIN users u ON a.user_id = u.id 
-        WHERE a.doctor_id = ? 
-        ORDER BY a.date ASC, a.time ASC
-    `;
-    
-    db.query(sql, [doctorId], (err, result) => {
-        if (err) {
-            console.error("❌ Error SQL",err);
-            return res.status(500).json({ msg: "Error Database Dokter" });
-        }
+// =========================================================
+//  ADMIN: MANAJEMEN DOKTER & JADWAL
+// =========================================================
 
-
-        res.json(result);
-    });
-});
-
-// --- 9. UPDATE STATUS JANJI TEMU (Selesai/Batal) ---
-app.put('/appointments/:id', (req, res) => {
-    const id = req.params.id;      // ID Janji Temu
-    const { status } = req.body;   // Status Baru ('selesai' / 'batal')
-
-    const sql = "UPDATE appointments SET status = ? WHERE id = ?";
-
-    db.query(sql, [status, id], (err, result) => {
-        if (err) return res.status(500).json({ msg: "Gagal update status" });
-        res.json({ msg: "Status berhasil diperbarui!" });
-    });
-});
-
-// --- 10. ADMIN: TAMBAH DOKTER BARU ---
+// --- 7. TAMBAH DOKTER + JADWAL BULK ---
 app.post('/admin/doctors', async (req, res) => {
-    const { name, email, password, specialist, phone } = req.body;
+    const { name, email, password, specialist, phone, schedules } = req.body;
     
-    // 1. Enkripsi Password Dulu!
-    const hashedPassword = await bcrypt.hash(password, 10);
-    
-    // 2. Masukkan ke Database (Password yang sudah di-hash)
-    const sql = "INSERT INTO users (name, email, password, role, specialist, phone) VALUES (?, ?, ?, 'dokter', ?, ?)";
-    
-    db.query(sql, [name, email, hashedPassword, specialist, phone], (err, result) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ msg: "Gagal menambah dokter. Email mungkin kembar." });
-        }
-        res.status(201).json({ msg: "Dokter berhasil ditambahkan!" });
+    // Cek Email Duplikat
+    db.query("SELECT * FROM users WHERE email = ?", [email], async (err, result) => {
+        if(err) return res.status(500).json({msg: "Error cek email"});
+        if(result.length > 0) return res.status(400).json({msg: "Email sudah terdaftar!"});
+
+        // Insert User Dokter
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const sqlDoc = "INSERT INTO users (name, email, password, role, specialist, phone) VALUES (?, ?, ?, 'dokter', ?, ?)";
+        
+        db.query(sqlDoc, [name, email, hashedPassword, specialist, phone], (err, result) => {
+            if (err) return res.status(500).json({ msg: "Gagal menambah dokter." });
+            
+            const newDoctorId = result.insertId;
+
+            // Insert Jadwal (Jika ada)
+            if (schedules && schedules.length > 0) {
+                const scheduleValues = schedules.map(s => [newDoctorId, s.day, s.start_time, s.end_time]);
+                const sqlSched = "INSERT INTO schedules (doctor_id, day, start_time, end_time) VALUES ?";
+                
+                db.query(sqlSched, [scheduleValues], (err, resSched) => {
+                    if(err) console.error("Gagal simpan jadwal:", err);
+                });
+            }
+
+            res.status(201).json({ msg: "Dokter berhasil ditambahkan!" });
+        });
     });
 });
 
-// --- 11. ADMIN: HAPUS DOKTER ---
+// --- 8. HAPUS DOKTER ---
 app.delete('/admin/doctors/:id', (req, res) => {
     const id = req.params.id;
-    
     const sql = "DELETE FROM users WHERE id = ?";
-    
     db.query(sql, [id], (err, result) => {
         if (err) return res.status(500).json({ msg: "Gagal menghapus" });
         res.json({ msg: "Dokter berhasil dihapus" });
     });
 });
 
-// --- 2. JALANKAN SERVER ---
-app.listen(5000, () => {
-    console.log("Server Backend berjalan di http://localhost:5000");
+// --- 9. UPDATE INFO DOKTER ---
+app.put('/admin/doctors/:id', (req, res) => {
+    const id = req.params.id;
+    const { name, specialist, phone } = req.body;
+    const sql = "UPDATE users SET name=?, specialist=?, phone=? WHERE id=?";
+    db.query(sql, [name, specialist, phone, id], (err, result) => {
+        if (err) return res.status(500).json({ msg: "Gagal update dokter" });
+        res.json({ msg: "Data dokter berhasil diperbarui!" });
+    });
+});
+
+// --- 10. TAMBAH SATU JADWAL (MANAJEMEN JADWAL) ---
+app.post('/schedules', (req, res) => {
+    const { doctor_id, day, start_time, end_time } = req.body;
+    const sql = "INSERT INTO schedules (doctor_id, day, start_time, end_time) VALUES (?, ?, ?, ?)";
+    db.query(sql, [doctor_id, day, start_time, end_time], (err, result) => {
+        if (err) return res.status(500).json(err);
+        res.status(201).json({ msg: "Jadwal berhasil ditambah" });
+    });
+});
+
+// --- 11. HAPUS SATU JADWAL ---
+app.delete('/schedules/:id', (req, res) => {
+    const id = req.params.id;
+    const sql = "DELETE FROM schedules WHERE id = ?";
+    db.query(sql, [id], (err, result) => {
+        if (err) return res.status(500).json(err);
+        res.json({ msg: "Jadwal dihapus" });
+    });
+});
+
+// =========================================================
+//  DASHBOARD DOKTER
+// =========================================================
+
+// --- 12. LIHAT PASIEN (Dashboard Dokter) ---
+// Update: Mengambil kolom diagnosis
+app.get('/doctor/appointments/:id', (req, res) => {
+    const doctorId = req.params.id;
+    const sql = `
+        SELECT a.id, a.date, a.time, a.status, a.complaint, a.diagnosis, a.user_id, u.name AS patient_name 
+        FROM appointments a 
+        JOIN users u ON a.user_id = u.id 
+        WHERE a.doctor_id = ?
+    `;
+    db.query(sql, [doctorId], (err, result) => {
+        if (err) return res.status(500).json(err);
+        res.json(result);
+    });
+});
+
+// --- 13. LIHAT RIWAYAT SPESIFIK (Popup Riwayat) ---
+// Filter berdasarkan Pasien DAN Dokter (Data Privacy)
+app.get('/appointments/history/:patientId/:doctorId', (req, res) => {
+    const { patientId, doctorId } = req.params;
+
+    if(!patientId || !doctorId) return res.status(400).json({msg: "Data tidak lengkap"});
+
+    const sql = "SELECT date, complaint, diagnosis, status FROM appointments WHERE user_id = ? AND doctor_id = ? ORDER BY date DESC";
+    
+    db.query(sql, [patientId, doctorId], (err, result) => {
+        if (err) return res.status(500).json(err);
+        res.json(result);
+    });
+});
+
+// --- 14. UPDATE STATUS & DIAGNOSA ---
+app.put('/appointments/:id', (req, res) => {
+    const id = req.params.id;
+    const { status, diagnosis } = req.body; 
+    
+    // Logika Dinamis: Jika ada diagnosa, simpan diagnosa. Jika tidak, cuma update status.
+    let sql = "UPDATE appointments SET status = ? WHERE id = ?";
+    let params = [status, id];
+
+    if (diagnosis) {
+        sql = "UPDATE appointments SET status = ?, diagnosis = ? WHERE id = ?";
+        params = [status, diagnosis, id];
+    }
+
+    db.query(sql, params, (err, result) => {
+        if (err) return res.status(500).json({ msg: "Gagal update status" });
+        res.json({ msg: "Update berhasil!" });
+    });
+});
+
+// =========================================================
+//  JALANKAN SERVER
+// =========================================================
+const PORT = 5000;
+app.listen(PORT, () => {
+    console.log(`🚀 Server Backend berjalan di http://localhost:${PORT}`);
 });
